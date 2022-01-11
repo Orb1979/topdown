@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class PlayerController : MonoBehaviour
     private InputAction move;
     private InputAction fire;
     private InputAction aim;
+    private InputAction back;
 
     private void Awake(){
          playerControls = new PlayerInputActions();
@@ -31,12 +33,17 @@ public class PlayerController : MonoBehaviour
         fire = playerControls.Player.Fire;
         fire.Enable();
         fire.performed += Fire;
+
+        back = playerControls.Player.Back;
+        back.Enable();
+        back.performed += BackToMenu;
     }
 
     private void OnDisable(){
         move.Disable();
         aim.Disable();
         fire.Disable();
+        back.Disable();
     }
  
     void Start(){
@@ -56,7 +63,7 @@ public class PlayerController : MonoBehaviour
         mousePosition = (Vector2) sceneCamera.ScreenToWorldPoint(mousePosition); 
     }
 
-    private void Fire(InputAction.CallbackContext context){
+    void Fire(InputAction.CallbackContext context){
         // Debug.Log("we fired");
         // weapon.Fire(); // old not pooled bullet spawning
         GameObject obj = ObjectPooler.current.GetPooledObject();
@@ -75,6 +82,10 @@ public class PlayerController : MonoBehaviour
 
         float aimAngle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg -90f;
         rb.rotation = aimAngle;
+    }
+
+    void BackToMenu(InputAction.CallbackContext context){
+         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex -1);
     }
 
 }
